@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import sys
+import argparse
+import nltk
+
+# Define a function that takes input_text and max_chars_per_sentence as input and returns formatted_text
+def generate_paragraphs(input_text, max_chars_per_sentence):
+    # Use nltk's sent_tokenize method to split input_text into a list of sentences
+    sentences = nltk.sent_tokenize(input_text)
+    formatted_text = ''  # Initialize an empty string to store the formatted text
+    paragraph = ''  # Initialize an empty string to store each paragraph
+    for sentence in sentences:
+        if len(paragraph) + len(sentence) < max_chars_per_sentence:  # If adding the current sentence does not exceed the maximum character limit
+            paragraph += sentence + ' '  # Add the current sentence to the paragraph string along with a space
+        else:
+            formatted_text += paragraph.strip() + '\n\n'  # Add the current paragraph to formatted_text string and include two new line characters
+            paragraph = sentence + ' '  # Reset the paragraph string with the current sentence
+    if paragraph != '':  # If there is any text remaining in the paragraph
+        formatted_text += paragraph.strip() + '\n\n'  # Add the remaining text to formatted_text with two new line characters
+
+    return formatted_text.strip()  # Return the formatted text string after stripping any leading/trailing whitespace
+
+# Run this block of code only if this script is being executed directly (not imported as a module)
+if __name__ == '__main__':
+    # Initialize an argument parser object
+    parser = argparse.ArgumentParser(description='Generate paragraphs from text file.')
+    # Add a required argument for the input file path
+    parser.add_argument('input_file', type=str, help='Path to input file')
+    # Add an optional argument for the maximum characters per sentence
+    parser.add_argument('-m', '--max-chars', type=int, default=800, help='Maximum characters per sentence')
+    # Parse the command line arguments
+    args = parser.parse_args()
+
+    # Open the input file in read mode
+    with open(args.input_file, 'r') as f:
+        # Read the contents of the file into input_text string
+        input_text = f.read()
+
+    # Call the generate_paragraphs function with input_text and max_chars argument values and store the formatted text in formatted_text string
+    formatted_text = generate_paragraphs(input_text, args.max_chars)
+    # Print the formatted text to the console
+    print(formatted_text)
