@@ -59,3 +59,7 @@ If one sentence exceeds `max_chars`, it becomes its own paragraph with no warnin
 - **Make it a proper Python package** with `pyproject.toml`, an entrypoint, and `nltk` as a declared dependency. `pipx install .` would then just work.
 - **Add `--separator` flag** — hardcoded `\n\n` works for markdown but some users might want `\n---\n` or similar.
 - **Accept multiple input files** — `nargs='*'` instead of `nargs='?'`, process each in sequence (standard UNIX pattern).
+- **Auto-detect language** — NLTK's `sent_tokenize` requires an explicit language name but has no detection capability. Add automatic detection so users don't need `-l` for every file. Recommended approach: use `langdetect` (port of Google's language-detection, lightweight, good accuracy for paragraph-length text). Detect language from input, map the ISO 639-1 code (e.g., `pl`) to the NLTK language name (e.g., `polish`), pass to `sent_tokenize`. The `-l` flag would change from `default='polish'` to `default='auto'`, with explicit `-l polish` still available as an override. Other options considered:
+  - `langid` — fast, no external dependencies, works fully offline, but less accurate on short texts.
+  - `lingua-language-detector` — most accurate, especially on short texts, but heavier dependency.
+  - Keep current behavior (manual `-l`) — simplest, no new dependency, but poor UX when processing texts in varying languages.
